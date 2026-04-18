@@ -1,6 +1,42 @@
-cd "c:\Users\user\OneDrive\바탕 화면\claude\news_blog_automation"
-git init
-git add .
-git commit -m "initial commit"
-git remote add origin https://github.com/[네 아이디]/news-blog-automation.git
-git push -u origin main
+name: Daily News Report
+
+on:
+  schedule:
+    - cron: '30 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-news:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install fonts
+        run: |
+          sudo apt-get install -y fonts-nanum
+          mkdir -p fonts
+          cp /usr/share/fonts/truetype/nanum/NanumGothic.ttf fonts/NanumGothic.ttf
+          cp /usr/share/fonts/truetype/nanum/NanumGothicBold.ttf fonts/NanumGothicBold.ttf
+
+      - name: Create .env
+        run: |
+          cat > .env << EOF
+          GMAIL_SENDER=${{ secrets.GMAIL_SENDER }}
+          GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}
+          GMAIL_RECIPIENT=${{ secrets.GMAIL_RECIPIENT }}
+          NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
+          EOF
+
+      - name: Run news automation
+        run: python main.py
