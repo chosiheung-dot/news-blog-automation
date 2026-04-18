@@ -1,0 +1,6 @@
+cd "c:\Users\user\OneDrive\바탕 화면\claude\news_blog_automation"
+git init
+git add .
+git commit -m "initial commit"
+git remote add origin https://github.com/[네 아이디]/news-blog-automation.git
+git push -u origin main
